@@ -77,8 +77,11 @@ public:
     //动物点击满足被解救的条件后，播放动画并消失
     virtual void animalHelpOk();
     
+    //动物解救成功后，头部播放获得积分的效果
+    virtual void winHelpOkScore();
     
-    
+    //动物被解救后，移除。
+    virtual void removeAnimal(CCNode* pNode);
     
 
 

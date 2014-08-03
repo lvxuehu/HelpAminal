@@ -58,9 +58,7 @@ bool Animal02::initUi(){
 }
 
 void Animal02::event_animalClicked(){
-//    CCLog("animal01 ccTouchEnded ");
     helpLife--;
-//    CCLog("helpLife=%d",helpLife);
 
     if (helpLife>0) {
         //播放被点击的声音
@@ -72,19 +70,24 @@ void Animal02::event_animalClicked(){
 }
 
 void Animal02::animalClicked(){
-    //动物被点击后放大，之后缩小
-    CCScaleTo* scalebig=CCScaleTo::create(0.1f,1.2f);
-    CCScaleTo* scalelittle=CCScaleTo::create(0.1f,1.0f);
-    CCFiniteTimeAction* sequence=CCSequence::create(scalebig,scalelittle,NULL);
-    this->runAction(sequence);
-    
-    
+    Animal::animalClicked();
 }
 
 void Animal02::animalHelpOk(){
-    animalClicked();
+    //解救成功，调用基类更新sumsorce，总分数。
     Animal::animalHelpOk();
-    gameLayer->removeAnimal(ANIMAL01, this);
+    //动物延迟消失
+    
+    CCActionInterval* animalFadeout = CCFadeOut::create(1.3f);
+    CCDelayTime* delayChange=CCDelayTime::create(0.2f);
+    CCCallFunc* showAD=CCCallFunc::create(this,callfunc_selector(Animal02::removeAnimal));
+    CCFiniteTimeAction* animalGoSequence=CCSequence::create(animalFadeout,delayChange,showAD,NULL);
+    
+    this->runAction(animalGoSequence);
+}
+
+void Animal02::removeAnimal(cocos2d::CCNode *pNode){
+    gameLayer->removeAnimal(ANIMAL02, this);
 }
 
 

@@ -20,7 +20,7 @@ public:
 	virtual ~GameLayer();
 
 	virtual bool init();
-    
+    virtual bool initImage();
     virtual bool initSound();
     virtual bool initUI();
     virtual bool initAnimal();
@@ -35,7 +35,10 @@ public:
 
     //得到当前游戏的等级
 	int getGameLevel();
+    //更新游戏的最新分数显示
     void updateSumScore(int score);
+    //更新最新的游戏等级
+    void updateGameLevel(int level);
     
     
     
@@ -79,6 +82,9 @@ private:
     
     //用来显示总分数的对象；
     CCLabelTTF* sumScoreItem;
+    
+    //用来显示当前游戏等级对象；
+    CCLabelTTF* gameLevelItem;
     
 };
 

@@ -33,6 +33,9 @@ public:
     
     //动物点击满足被解救的条件后，播放动画并消失
     void animalHelpOk();
+    
+    //动物被解救后，移除。
+    void removeAnimal(CCNode* pNode);
 
 };
 

@@ -103,10 +103,49 @@ void Animal::event_animalClicked(){
 
 //动物点击后的动画
 void Animal::animalClicked(){
-    
+    //动物被点击后放大，之后缩小
+    CCScaleTo* scalebig=CCScaleTo::create(0.1f,1.2f);
+    CCScaleTo* scalelittle=CCScaleTo::create(0.1f,1.0f);
+    CCFiniteTimeAction* sequence=CCSequence::create(scalebig,scalelittle,NULL);
+    this->runAction(sequence);
 }
 
 //动物点击满足被解救的条件后，播放动画并消失
 void Animal::animalHelpOk(){
-    gameLayer->updateSumScore(this->helpScore);
+    //去掉自己的监听点击事件
+    CCDirector* pDirector = CCDirector::sharedDirector();
+    pDirector->getTouchDispatcher()->removeDelegate(this);
+    
+    //播放点击效果
+    animalClicked();
+    winHelpOkScore();
+    gameLayer->updateSumScore(this->helpScore);    
+}
+
+void Animal::winHelpOkScore(){
+    //播放动物头顶的得分动画
+    CCSize size=this->getContentSize();
+    
+    CCString* strScore=CCString::createWithFormat("%d",helpScore);
+    
+    CCLabelTTF* helpScoreItem = CCLabelTTF::create(strScore->m_sString.c_str(), "Arial", 20);
+    helpScoreItem->setColor(ccc3(23,0,0));
+    helpScoreItem->setPosition(ccp(size.width/2,size.height/2+50));
+    this->addChild(helpScoreItem, 1);
+    
+    
+    //先显示分数，然后播放放大效果动画
+    
+    CCMoveBy* moveOut=CCMoveBy::create(1.0f,ccp(0,100));
+    CCScaleTo* scalebig=CCScaleTo::create(0.5f,3.0f);
+    CCFiniteTimeAction* helpScoreSequence1=CCSequence::create(moveOut,scalebig,NULL);
+    
+    CCActionInterval* fadeout = CCFadeOut::create(1.5f);
+    CCFiniteTimeAction* helpScoreSequence2=CCSequence::create(fadeout,NULL);
+    CCSpawn* itemSpawn=CCSpawn::create(helpScoreSequence1,helpScoreSequence2);
+    helpScoreItem->runAction(itemSpawn);
+}
+
+void Animal::removeAnimal(cocos2d::CCNode *pNode){
+    
 }

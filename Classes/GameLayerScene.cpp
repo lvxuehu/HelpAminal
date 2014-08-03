@@ -11,6 +11,7 @@ GameLayer::GameLayer(){
 	sumScore=0;
     isAlive=true;
     sumScoreItem=NULL;
+    gameLevelItem=NULL;
     m_pAllAnimal1=CCArray::create();
     m_pAllAnimal1->retain();
     m_pAllAnimal2=CCArray::create();
@@ -43,18 +44,9 @@ bool GameLayer::init(){
 		CC_BREAK_IF(!CCLayer::init());
         
         initSound();
+        initImage();
         initUI();
         initAnimal();
-        
-        //addAnimal1(2.0);
-        
-        //addAnimal1(2.0);
-        
-        this->schedule(schedule_selector(GameLayer::addAnimal1),2.0f);//循环的加入敌机1，每隔0.5秒
-		this->schedule(schedule_selector(GameLayer::addAnimal2),3.0f);
-        this->schedule(schedule_selector(GameLayer::addAnimal3),4.0f);
-
-        
         
 		//触发update方法
 		this->scheduleUpdate();
@@ -79,29 +71,40 @@ bool GameLayer::initSound(){
 
 //初始化主游戏的界面
 bool GameLayer::initUI(){
+    CCSize winSize=CCDirector::sharedDirector()->getWinSize();
     CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 //    CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+    
+    CCSprite* background=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("background.png"));
+    background->setPosition(ccp(winSize.width/2,winSize.height/2));
+    this->addChild(background,0);
+    
+    //当前游戏分数
     sumScoreItem = CCLabelTTF::create("0", "Arial", 30);
-    sumScoreItem->setColor(ccc3(143,146,147));
+    sumScoreItem->setColor(ccc3(0,0,0));
     sumScoreItem->setPosition(ccp(80,visibleSize.height-50));
     this->addChild(sumScoreItem, 1);
+    
+    //当前游戏等级
+    gameLevelItem = CCLabelTTF::create("1", "Arial", 30);
+    gameLevelItem->setColor(ccc3(0,0,0));
+    gameLevelItem->setPosition(ccp(sumScoreItem->getPositionX()+100,visibleSize.height-50));
+    this->addChild(gameLevelItem, 1);
+    
+    CCSprite* frontground=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("grass.png"));
+    frontground->setAnchorPoint(ccp(0,0));
+    frontground->setPosition(ccp(0,0));
+    this->addChild(frontground,255);
+
 
     
     return true;
 }
 
-//初始化动物的动画效果
-bool GameLayer::initAnimal(){
+bool GameLayer::initImage(){
     //先初始化好所有动物的第一帧；
     //    animal1SpriteFrame=CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("enemy1.png");
     //    animal2SpriteFrame=CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("enemy2.png");
-    
-    CCSize winSize=CCDirector::sharedDirector()->getWinSize();
-    
-    CCSprite* background=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("background.png"));
-    background->setPosition(ccp(winSize.width/2,winSize.height/2));
-    this->addChild(background);
-    
     
     //缓存点击的动画
     CCAnimation* animationClicked1=CCAnimation::create();
@@ -131,8 +134,16 @@ bool GameLayer::initAnimal(){
     CCAnimationCache::sharedAnimationCache()->addAnimation(animationClicked1,"Enemy1Blowup");//把初始化好的动画缓存起来
     CCAnimationCache::sharedAnimationCache()->addAnimation(animationHelpOk1,"Enemy2Blowup");
     CCAnimationCache::sharedAnimationCache()->addAnimation(animationLost1,"Enemy2Blowup");
+    
+    
+    return true;
+}
 
-
+//初始化游戏
+bool GameLayer::initAnimal(){
+    this->schedule(schedule_selector(GameLayer::addAnimal1),2.0f);//循环的加入敌机1，每隔0.5秒
+    this->schedule(schedule_selector(GameLayer::addAnimal2),3.0f);
+    this->schedule(schedule_selector(GameLayer::addAnimal3),4.0f);
     return true;
 }
 
@@ -142,7 +153,7 @@ bool GameLayer::initAnimal(){
 //根据游戏事件，设置游戏的难度等级
 /************************************************************************/
 void GameLayer::update(float delta){
-    //level=1.2;
+    
 
 }
 
@@ -283,5 +294,25 @@ void GameLayer::updateSumScore(int score){
     
     CCString* strScore=CCString::createWithFormat("%d",sumScore);
     sumScoreItem->setString(strScore->m_sString.c_str());
+    
+    //根据sumscore来设定游戏等级
+    
+    if (sumScore>1000&&sumScore<=2000) {
+        updateGameLevel(2);
+        CCLog("game gamelevel=%d",gameLevel);
+    }else if(sumScore>2000&&sumScore<=3000){
+        updateGameLevel(3);
+        CCLog("game gamelevel=%d",gameLevel);
+    }
+    
+}
+
+void GameLayer::updateGameLevel(int level){
+    if (level>0&&level<=10&&level>gameLevel) {
+        gameLevel=level;
+        CCString* strLevel=CCString::createWithFormat("%d",gameLevel);
+        gameLevelItem->setString(strLevel->m_sString.c_str());
+        
+    }
     
 }
