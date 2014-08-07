@@ -19,6 +19,7 @@ bool WelcomeLayer::init()
 		//png加入全局cache中
 		CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("animal.plist");
 		CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("ui.plist");
+//        CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("gameoverUi0.plist");
 
 		CCSize winSize=CCDirector::sharedDirector()->getWinSize();
 

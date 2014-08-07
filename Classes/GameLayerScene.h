@@ -3,15 +3,35 @@
 
 
 #include "cocos2d.h"
+#include "cocos-ext.h"
 
 USING_NS_CC;
+USING_NS_CC_EXT;
+using namespace ui;
 
 //动物的种类
+//修改动物的类型是必须修改以下值
+//int animalTypeCount=3;
+//int bossTypeCount=3;
 enum AnimalType{
     ANIMAL01,
     ANIMAL02,
     ANIMAL03,
 };
+
+//Boss的种类
+enum BossType{
+    BOSS01,
+    BOSS02,
+    BOSS03,
+};
+
+
+//每一级游戏难度结束的累计秒数，比如：第一级累计到10秒，第二级累计到15秒，等等
+const float timesByLevel[10]={10,15,30,50,60,75,85,100,120,200};
+//每一个游戏难度下对应的添加动物的定时器周期，单位秒。
+//周期的计算公式：period=每一个难度出现的动物数/(timesByLevel[gamelevel]-timesByLevel[gamelevel-1])。
+const float periodByLevel[10]={1.33,1.17,1.25,1.33,1.17,1.23,1.14,1.19,1.24,1.22};
 
 
 class GameLayer:public CCLayer{
@@ -38,7 +58,7 @@ public:
     //更新游戏的最新分数显示
     void updateSumScore(int score);
     //更新最新的游戏等级
-    void updateGameLevel(int level);
+    void updateGameLevel(float dt);
     
     
     
@@ -57,8 +77,8 @@ public:
 	//动物飞出顶端后的处理方法3
     void animal3MoveFinished(CCNode* pSender);
     
-    //添加动物1
-    void addAnimal(AnimalType at);
+    //添加动物,方法中随机计算添加的动物种类
+    void addAnimal(float dt);
     
     //销毁动物的方法，在动物飞出屏幕或者拯救成功后调用
     void removeAnimal(AnimalType at, void* data);
@@ -68,14 +88,23 @@ public:
 private:
     //主角是否活着
     bool isAlive;
+    
+    //修改动物的类型是必须修改以下值
+    int animalTypeCount;
+    int bossTypeCount;
+    
     //用来存放动物的集合
     CCArray* m_pAllAnimal1;
     CCArray* m_pAllAnimal2;
     CCArray* m_pAllAnimal3;
     
-    //游戏的开始时间
-    long gameStartTime;
-    //游戏的当前等级
+    
+    //用来存放BOSS动物的集合
+    CCArray* m_pAllBossAnimal1;
+    
+    //游戏时间计数器，每一秒加1，定时器每一秒调用一次。
+    int timer;
+    //游戏的当前等级,最小为1级
     int gameLevel;
     //游戏的总得分，玩家得分
     int sumScore;
@@ -85,6 +114,9 @@ private:
     
     //用来显示当前游戏等级对象；
     CCLabelTTF* gameLevelItem;
+    
+    //用来显示游戏运行时间的对象；
+    CCLabelTTF* gameTimerItem;
     
 };
 

@@ -89,6 +89,10 @@ int Animal::getLostScore(){
     return lostScore;
 }
 
+int Animal::getComboScore(){
+    return helpScore+(63%50+1)*63;
+}
+
 
 
 bool Animal::initUi(){

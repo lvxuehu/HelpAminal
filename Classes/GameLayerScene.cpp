@@ -6,10 +6,12 @@
 
 
 GameLayer::GameLayer(){
-    gameStartTime=0.0;
+    timer=0;
     gameLevel=1;
 	sumScore=0;
     isAlive=true;
+    animalTypeCount=3;
+    bossTypeCount=3;
     sumScoreItem=NULL;
     gameLevelItem=NULL;
     m_pAllAnimal1=CCArray::create();
@@ -18,6 +20,10 @@ GameLayer::GameLayer(){
     m_pAllAnimal2->retain();
     m_pAllAnimal3=CCArray::create();
     m_pAllAnimal3->retain();
+    
+    m_pAllBossAnimal1=CCArray::create();
+    m_pAllBossAnimal1->retain();
+    
 }
 
 GameLayer::~GameLayer(){
@@ -27,6 +33,9 @@ GameLayer::~GameLayer(){
     m_pAllAnimal2=NULL;
     m_pAllAnimal3->release();
     m_pAllAnimal3=NULL;
+    
+    m_pAllBossAnimal1->release();
+    m_pAllBossAnimal1=NULL;
 }
 
 
@@ -74,27 +83,36 @@ bool GameLayer::initUI(){
     CCSize winSize=CCDirector::sharedDirector()->getWinSize();
     CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 //    CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-    
+    //初始化背景
     CCSprite* background=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("background.png"));
+    //CCLog("siez h=%f",background->getContentSize().height);
     background->setPosition(ccp(winSize.width/2,winSize.height/2));
     this->addChild(background,0);
     
+    //加入前景
+    CCSprite* frontground=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("grass.png"));
+    frontground->setAnchorPoint(ccp(0,0));
+    frontground->setPosition(ccp(0,0));
+    this->addChild(frontground,255);
+    
     //当前游戏分数
-    sumScoreItem = CCLabelTTF::create("0", "Arial", 30);
+    sumScoreItem = CCLabelTTF::create("积分:0", "Arial", 30);
     sumScoreItem->setColor(ccc3(0,0,0));
     sumScoreItem->setPosition(ccp(80,visibleSize.height-50));
     this->addChild(sumScoreItem, 1);
     
     //当前游戏等级
-    gameLevelItem = CCLabelTTF::create("1", "Arial", 30);
+    gameLevelItem = CCLabelTTF::create("游戏等级:1", "Arial", 30);
     gameLevelItem->setColor(ccc3(0,0,0));
-    gameLevelItem->setPosition(ccp(sumScoreItem->getPositionX()+100,visibleSize.height-50));
+    gameLevelItem->setPosition(ccp(sumScoreItem->getPositionX()+sumScoreItem->getContentSize().width+80,visibleSize.height-50));
     this->addChild(gameLevelItem, 1);
     
-    CCSprite* frontground=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("grass.png"));
-    frontground->setAnchorPoint(ccp(0,0));
-    frontground->setPosition(ccp(0,0));
-    this->addChild(frontground,255);
+    
+    //当前游戏运行时间
+    gameTimerItem = CCLabelTTF::create("游戏时间:0", "Arial", 30);
+    gameTimerItem->setColor(ccc3(0,0,0));
+    gameTimerItem->setPosition(ccp(gameLevelItem->getPositionX()+gameLevelItem->getContentSize().width+20,visibleSize.height-50));
+    this->addChild(gameTimerItem, 1);
 
 
     
@@ -141,9 +159,11 @@ bool GameLayer::initImage(){
 
 //初始化游戏
 bool GameLayer::initAnimal(){
-    this->schedule(schedule_selector(GameLayer::addAnimal1),2.0f);//循环的加入敌机1，每隔0.5秒
-    this->schedule(schedule_selector(GameLayer::addAnimal2),3.0f);
-    this->schedule(schedule_selector(GameLayer::addAnimal3),4.0f);
+    //增加一个1秒钟一次的定时器，用来计时，设置游戏的当前等级。
+    this->schedule(schedule_selector(GameLayer::updateGameLevel),2.0f);
+    this->schedule(schedule_selector(GameLayer::addAnimal),periodByLevel[0]);
+//    this->schedule(schedule_selector(GameLayer::addAnimal2),3.0f);//加入boss的定时器
+//    this->schedule(schedule_selector(GameLayer::addAnimal3),4.0f);
     return true;
 }
 
@@ -173,10 +193,16 @@ void GameLayer::addAnimal3(float dt){
 
 
 //向屏幕添加动物1
-void GameLayer::addAnimal(AnimalType at)
+void GameLayer::addAnimal(float dt)
 {
+    //随机添加动物
+    srand((unsigned)time(NULL));
+    int r1=rand();
+    int aimal=r1%animalTypeCount;
+    
+    
     Animal* animal=NULL;
-    switch (at) {
+    switch (aimal) {
         case ANIMAL01:
             animal=Animal01::create(this);
             break;
@@ -211,7 +237,7 @@ void GameLayer::addAnimal(AnimalType at)
 	
     CCFiniteTimeAction* actionDone=NULL;
     
-    switch (at) {
+    switch (aimal) {
         case ANIMAL01:
             this->m_pAllAnimal1->addObject(animal);
             actionDone=CCCallFuncN::create(this,callfuncN_selector(GameLayer::animal1MoveFinished));
@@ -292,27 +318,42 @@ int GameLayer::getGameLevel(){
 void GameLayer::updateSumScore(int score){
     sumScore+=score;
     
-    CCString* strScore=CCString::createWithFormat("%d",sumScore);
+    CCString* strScore=CCString::createWithFormat("积分:%d",sumScore);
     sumScoreItem->setString(strScore->m_sString.c_str());
     
-    //根据sumscore来设定游戏等级
+    //根据sumscore来设定游戏等级，取消，改为根据游戏进行的时间来设定游戏等级；
     
-    if (sumScore>1000&&sumScore<=2000) {
-        updateGameLevel(2);
-        CCLog("game gamelevel=%d",gameLevel);
-    }else if(sumScore>2000&&sumScore<=3000){
-        updateGameLevel(3);
-        CCLog("game gamelevel=%d",gameLevel);
-    }
+//    if (sumScore>1000&&sumScore<=2000) {
+//        updateGameLevel(2);
+//        CCLog("game gamelevel=%d",gameLevel);
+//    }else if(sumScore>2000&&sumScore<=3000){
+//        updateGameLevel(3);
+//        CCLog("game gamelevel=%d",gameLevel);
+//    }
     
 }
 
-void GameLayer::updateGameLevel(int level){
-    if (level>0&&level<=10&&level>gameLevel) {
-        gameLevel=level;
-        CCString* strLevel=CCString::createWithFormat("%d",gameLevel);
+//定时器每一秒调用一次这个方法，时间计数器加1，并且根据计数器的值，设定游戏等级
+void GameLayer::updateGameLevel(float dt){
+    timer++;
+    CCString* strTimer=CCString::createWithFormat("游戏时间:%d秒",timer);
+    gameTimerItem->setString(strTimer->m_sString.c_str());
+
+    
+    //CCLog("timer=%d",timer);
+    
+    if (timer==timesByLevel[gameLevel-1]) {
+        gameLevel+=1;
+        CCString* strLevel=CCString::createWithFormat("游戏等级:%d",gameLevel);
         gameLevelItem->setString(strLevel->m_sString.c_str());
         
+        //添加动物的定时器，会根据游戏的等级变换定时器周期
+        //删除之前的定时器
+        this->unschedule(schedule_selector(GameLayer::addAnimal));
+        //添加一个新的定时器
+        this->schedule(schedule_selector(GameLayer::addAnimal),periodByLevel[gameLevel-1]);
     }
     
+    CCLog("timer=%d,gamelevel=%d",timer,gameLevel);
+   
 }

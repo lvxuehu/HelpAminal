@@ -16,7 +16,7 @@ Animal01::Animal01(GameLayer* game)
     lostScore=1;
     helpLife=1;
     //动物的飞行速度系数
-    speed=1.2;
+    speed=1.1;
 }
 
 

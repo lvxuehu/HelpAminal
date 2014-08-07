@@ -14,22 +14,38 @@ USING_NS_CC;
 
 //拯救不同动物的分数
 const int ANIMAL1_HELP_SCORE=100;
-const int ANIMAL2_HELP_SCORE=600;
-const int ANIMAL3_HELP_SCORE=3000;
+const int ANIMAL2_HELP_SCORE=100;
+const int ANIMAL3_HELP_SCORE=100;
+
+//拯救不同BOSS动物的分数
+const int BOSS1_HELP_SCORE=1000;
+const int BOSS2_HELP_SCORE=1000;
 
 //拯救不同动物需要点击次数
+//animal1表示普通动物
 const int ANIMAL1_HELP_LIFE=1;
 const int ANIMAL2_HELP_LIFE=2;
 const int ANIMAL3_HELP_LIFE=3;
 
+//拯救不同BOSS动物需要点击次数
+//animal1表示普通动物
+const int BOSS1_HELP_LIFE=5;
+const int BOSS2_HELP_LIFE=6;
+const int BOSS3_HELP_LIFE=7;
+
 
 //丢失不同动物的要扣的玩家红心量，以半个为单位，玩家总共3个心，6积分
 const int ANIMAL1_LOST_SCORE=1;
-const int ANIMAL2_LOST_SCORE=2;
-const int ANIMAL3_LOST_SCORE=3;
+const int ANIMAL2_LOST_SCORE=1;
+//BOSS丢失的红心数
+const int BOSS1_LOST_SCORE=2;
 
-//动物飞行的速度，数值越小，飞的越快。
+//每一个游戏难度下动物的全局飞行速度，数值越小，飞的越快。
+//数组的下标就是游戏难度，比如gamelevel=1时，flyspeed=flyspeed[1]=10；
+//每种动物都有自己的飞行速度，因此动物在每个难度下的真实飞行速度是speed=anminalSpeed*flyspeed[gameLevel]；
 const float flySpeed[10]={10,9,8,7,6,5,4,3,2,1};
+
+
 
 
 class Animal:public CCSprite,public CCTargetedTouchDelegate{
@@ -55,6 +71,8 @@ public:
     int getHelpLife();
     
     int getLostScore();
+    
+    int getComboScore();
     
     
     

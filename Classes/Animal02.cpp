@@ -12,9 +12,9 @@
 Animal02::Animal02(GameLayer* game)
 {
     gameLayer=game;
-    helpScore=200;
-    lostScore=2;
-    helpLife=2;
+    helpScore=100;
+    lostScore=1;
+    helpLife=1;
     //动物的飞行速度系数
     speed=1.4;
 }
