@@ -9,6 +9,7 @@
 #define HelpAnimal_Animal_h
 #include "cocos2d.h"
 #include "GameLayerScene.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -78,6 +79,9 @@ public:
     
     //根据当前的游戏难度得到动物上升的速度
     float getAnimalSpeedByLevel();
+    
+    //动物摇晃的方法
+    bool animalShaky();
     
     
     /////////需要子类自己实现的方法///////////////

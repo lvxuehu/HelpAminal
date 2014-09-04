@@ -17,6 +17,7 @@ Animal02::Animal02(GameLayer* game)
     helpLife=1;
     //动物的飞行速度系数
     speed=1.4;
+    Animal::animalShaky();
 }
 
 
@@ -50,7 +51,8 @@ Animal02* Animal02::create(GameLayer* gameLayer){
 bool Animal02::initUi(){
     bool bRet=false;
     do{
-        CC_BREAK_IF(!this->initWithFile("02.png"));
+//        CC_BREAK_IF(!this->initWithFile("02.png"));
+        CC_BREAK_IF(!this->initWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("02.png")));
         bRet=true;
     }while (0);
     

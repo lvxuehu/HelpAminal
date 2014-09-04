@@ -1,24 +1,38 @@
-#ifndef _WELCOMESCENE_H_
-#define _WELCOMESCENE_H_
+#ifndef _WELCOMELAYER_H_
+#define _WELCOMELAYER_H_
 #include "cocos2d.h"
-#include "WelcomeLayer.h"
 
 USING_NS_CC;
 
-class WelcomeScene:public CCScene{
+
+class WelcomeLayer:public CCLayer
+{
 public:
-	WelcomeScene(void);
-	~WelcomeScene(void);
+	WelcomeLayer(void);
+	~WelcomeLayer(void);
 
-	CREATE_FUNC(WelcomeScene);
-
+	CREATE_FUNC(WelcomeLayer);
 	virtual bool init();
 
-	void preloadMusic();
-	
+    static CCScene* scene();
+    
+	void loadingDone(CCNode *pNode);
+	virtual void keyBackClicked();
+	bool isHaveSaveFile();
 
+    void preloadMusic();
+    
+	void getHighestHistorySorce();
+    
+    void menuStartGameCallback(CCObject* pSender);
+    
+    void menuMusicGameCallback(CCObject* pSender);
+    
 public:
-	WelcomeLayer* welcomeLayer;
+
+    
+    //是否播放背景音乐
+    bool ifPlayBkMusic;
 };
 
 

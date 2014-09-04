@@ -4,6 +4,7 @@
 
 #include "cocos2d.h"
 #include "cocos-ext.h"
+#include "NoTouchLayer.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -38,7 +39,7 @@ class GameLayer:public CCLayer{
 public:
 	GameLayer();
 	virtual ~GameLayer();
-
+    
 	virtual bool init();
     virtual bool initImage();
     virtual bool initSound();
@@ -55,10 +56,24 @@ public:
 
     //得到当前游戏的等级
 	int getGameLevel();
+    
+    //得到当前游戏积分
+	int getGameScore();
+    
+    //得到当前游戏的剩余血量
+	int getGameLife();
+    
+    //得到当前游戏执行时间
+	int getGameTime();
+    
+    
     //更新游戏的最新分数显示
     void updateSumScore(int score);
     //更新最新的游戏等级
     void updateGameLevel(float dt);
+    
+    //更新血量
+    void updateGameLife(int life);
     
     
     
@@ -82,25 +97,33 @@ public:
     
     //销毁动物的方法，在动物飞出屏幕或者拯救成功后调用
     void removeAnimal(AnimalType at, void* data);
-
+    
+    //游戏结束，切换到gameover的场景
+    void gameOver();
+    //暂停游戏
+    void menuPauseCallback(CCObject* pSender);\
+    
+public:
+    //是否播放背景音乐
+    bool ifPlayBkMusic;
     
     
 private:
     //主角是否活着
     bool isAlive;
     
+    
     //修改动物的类型是必须修改以下值
     int animalTypeCount;
     int bossTypeCount;
     
-    //用来存放动物的集合
-    CCArray* m_pAllAnimal1;
-    CCArray* m_pAllAnimal2;
-    CCArray* m_pAllAnimal3;
+    //用来存放动物
+    CCArray* m_pAllAnimal;
+    //存放Boss
+    CCArray* m_pAllBossAnimal;
+    //存放所有炸弹的集合
+    CCArray* m_pAllBomb;
     
-    
-    //用来存放BOSS动物的集合
-    CCArray* m_pAllBossAnimal1;
     
     //游戏时间计数器，每一秒加1，定时器每一秒调用一次。
     int timer;
@@ -108,6 +131,8 @@ private:
     int gameLevel;
     //游戏的总得分，玩家得分
     int sumScore;
+    //玩家当前游戏血量
+    int gameLife;
     
     //用来显示总分数的对象；
     CCLabelTTF* sumScoreItem;
@@ -117,6 +142,13 @@ private:
     
     //用来显示游戏运行时间的对象；
     CCLabelTTF* gameTimerItem;
+    
+    //用来显示游戏血量的对象；
+    CCLabelTTF* gameLifeItem;
+    
+    //CCMenuItemImage* pPauseItem;//暂停的按钮
+    
+    //NoTouchLayer* noTouchLayer;
     
 };
 

@@ -26,9 +26,34 @@ Animal::~Animal(){
 }
 
 CCRect Animal::rect(){
-    CCSize size = getTexture()->getContentSize();
-    return CCRectMake(-size.width / 2 ,-size.height / 2, size.width ,size.height);
+//    CCSize size = getTexture()->getContentSize();
+//    return CCRectMake(-size.width / 2 ,-size.height / 2, size.width ,size.height);
 //    return CCRectMake(-70 ,-70, 130 ,130);
+    
+    CCSize size = this->getContentSize();
+    
+	CCPoint position = this->getPosition();
+    
+	CCPoint point = this->getAnchorPoint();
+    
+	return CCRectMake(position.x - point.x * size.width,
+                      position.y - point.y * size.height,
+                      size.width, size.height);
+    
+	//CCSize size = this->getTexture()->getContentSize();
+    
+    /* CCRect rect = CCRectMake(-size.width / 2 ,-size.height / 2, size.width ,size.height);
+     
+     rect = CCRectMake(position.x, position.y, 190, 150);
+     
+     CCLog("animal position x:%f, y:%f", position.x, position.y);
+     
+     CCLog("animal anchor point x:%f, y:%f", point.x, point.y);
+     
+     return rect;*/
+    //    return CCRectMake(-70 ,-70, 130 ,130);
+    
+    
 }
 
 void Animal::onEnter(){
@@ -45,7 +70,15 @@ void Animal::onExit(){
 }
 
 bool Animal::containTouchPoint(cocos2d::CCTouch* touch){
-    return rect().containsPoint(convertTouchToNodeSpaceAR(touch));
+    //return rect().containsPoint(convertTouchToNodeSpaceAR(touch));
+    
+    CCRect rect = this->rect();
+    
+	CCPoint touchPoint = convertTouchToNodeSpaceAR(touch);
+	
+	bool result = rect.containsPoint(this->convertToWorldSpaceAR(touchPoint));
+	
+	return result;
 }
 
 bool Animal::ccTouchBegan(CCTouch *touch ,CCEvent *event){
@@ -70,11 +103,37 @@ void Animal::ccTouchEnded(CCTouch *touch ,CCEvent *event){
 }
 
 
+//返回动物上升的速度，有一定几率速度提高
 float Animal::getAnimalSpeedByLevel(){
+    u_int32_t r=arc4random();
+    int n=r%10;
+    float tempV=1;
+    
+    if (n>2&&n<5) {
+        tempV=1.2;
+    }else if(n>6&&n<8){
+        tempV=1.4;
+    }
+//    CCLog("n=%d,tempV=%f",n,tempV);
     int level=gameLayer->getGameLevel();
-    float v=flySpeed[level]*speed;
+    float v=flySpeed[level]*speed*tempV;
     return v;
 }
+
+
+//动物摇晃效果
+bool Animal::animalShaky(){
+    bool bRet=false;
+    do{
+        this->setRotation(20);
+        CCActionInterval* rotate2=CCRotateBy::create(2.5f,-40);
+        CCSequence* rotateSequence=CCSequence::create(rotate2,rotate2->reverse(),NULL);
+        this->runAction(CCRepeatForever::create(rotateSequence));
+        bRet=true;
+    }while (0);
+    return bRet;
+}
+
 
 int Animal::getHelpScore(){
     return helpScore;
@@ -107,6 +166,8 @@ void Animal::event_animalClicked(){
 
 //动物点击后的动画
 void Animal::animalClicked(){
+    //点击的音乐
+    CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("click-01.wav");
     //动物被点击后放大，之后缩小
     CCScaleTo* scalebig=CCScaleTo::create(0.1f,1.2f);
     CCScaleTo* scalelittle=CCScaleTo::create(0.1f,1.0f);
@@ -146,7 +207,7 @@ void Animal::winHelpOkScore(){
     
     CCActionInterval* fadeout = CCFadeOut::create(1.5f);
     CCFiniteTimeAction* helpScoreSequence2=CCSequence::create(fadeout,NULL);
-    CCSpawn* itemSpawn=CCSpawn::create(helpScoreSequence1,helpScoreSequence2);
+    CCSpawn* itemSpawn=CCSpawn::create(helpScoreSequence1,helpScoreSequence2,NULL);
     helpScoreItem->runAction(itemSpawn);
 }
 

@@ -1,5 +1,7 @@
 #include "AppDelegate.h"
-#include "WelcomeScene.h"
+#include "CoverScene.h"
+#include "SimpleAudioEngine.h"
+
 USING_NS_CC;
 
 AppDelegate::AppDelegate() {
@@ -16,15 +18,17 @@ bool AppDelegate::applicationDidFinishLaunching() {
     CCEGLView* pEGLView = CCEGLView::sharedOpenGLView();
 
     pDirector->setOpenGLView(pEGLView);
+    
+    pEGLView->setDesignResolutionSize(960, 640, kResolutionFixedHeight);
 	
     // turn on display FPS
-    pDirector->setDisplayStats(true);
+    pDirector->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / 60);
 
     // create a scene. it's an autorelease object
-    CCScene *pScene = WelcomeScene::create();
+    CCScene *pScene = CoverLayer::scene();
     // run
     pDirector->runWithScene(pScene);
 
@@ -36,7 +40,7 @@ void AppDelegate::applicationDidEnterBackground() {
     CCDirector::sharedDirector()->stopAnimation();
 
     // if you use SimpleAudioEngine, it must be pause
-    // SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+    CocosDenshion::SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
 }
 
 // this function will be called when the app is active again
@@ -44,5 +48,5 @@ void AppDelegate::applicationWillEnterForeground() {
     CCDirector::sharedDirector()->startAnimation();
 
     // if you use SimpleAudioEngine, it must resume here
-    // SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+    CocosDenshion::SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
 }

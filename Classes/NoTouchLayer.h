@@ -1,0 +1,33 @@
+//
+//  NoTouchLayer.h
+//  HelpAnimal
+//
+//  Created by lly on 14-8-8.
+//
+//
+
+#ifndef __HelpAnimal__NoTouchLayer__
+#define __HelpAnimal__NoTouchLayer__
+
+#include <iostream>
+
+#include "cocos2d.h"
+USING_NS_CC;
+
+class NoTouchLayer :public CCLayer
+{
+public:
+	virtual bool init();
+    
+	// implement the "static node()" method manually
+	CREATE_FUNC(NoTouchLayer);
+    
+	virtual void registerWithTouchDispatcher();
+    
+	virtual bool ccTouchBegan (cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent);
+	virtual void ccTouchMoved (cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent);
+	virtual void ccTouchEnded (cocos2d::CCTouch *pTouch, cocos2d::CCEvent *pEvent);
+};
+
+
+#endif /* defined(__HelpAnimal__NoTouchLayer__) */

@@ -33,8 +33,8 @@ bool MainGameLayer::init(){
         this->addChild(layer, 1, layer->getTag());
 
         //开始游戏按钮
-		CCSprite* normalBackToGame=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("bt.png"));
-		CCSprite* pressedBackToGame=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("bt.png"));
+		CCSprite* normalBackToGame=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("play.png"));
+		CCSprite* pressedBackToGame=CCSprite::createWithSpriteFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("play.png"));
 		CCMenuItemImage* pBackItem=CCMenuItemImage::create();
 		pBackItem->initWithNormalSprite(normalBackToGame,pressedBackToGame,NULL,this,menu_selector(MainGameLayer::startGame));
 		pBackItem->setPosition(ccp(winSize.width/2,winSize.height/2+10));
